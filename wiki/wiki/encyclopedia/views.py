@@ -3,7 +3,7 @@ import random
 from django.shortcuts import render, redirect
 
 from . import util
-from .forms import CreatePageForm
+from .forms import CreatePageForm, EditForm
 from .util import get_entry, save_entry
 
 
@@ -16,10 +16,13 @@ def index(request):
 def title(request, titles):
     if titles in util.list_entries():
         body = get_entry(titles)
-        return render(request, 'encyclopedia/entry.html', {
-            "my_title": titles,
-            'body': body
-        })
+
+        if request.method == 'GET':
+            return render(request, 'encyclopedia/entry.html', {
+                "my_title2": titles,
+                'body': body
+            })
+
     elif titles not in util.list_entries():
         return render(request, 'encyclopedia/error.html')
 
@@ -28,9 +31,9 @@ def create_new_page(request):
     if request.method == 'POST':
         form = CreatePageForm(request.POST)
         if form.is_valid():
-            my_title = form.cleaned_data['title']
+            my_title2 = form.cleaned_data['title']
             my_content = form.cleaned_data['body']
-            save_entry(title=my_title, content=my_content)
+            save_entry(title=my_title2, content=my_content)
             return redirect('index')
 
     return render(request, 'encyclopedia/create.html', {
@@ -40,9 +43,28 @@ def create_new_page(request):
 
 
 def random_page(request):
-    random_item = random.choice(util.list_entries())
-    body = get_entry(random_item)
+    rando_page = random.choice(util.list_entries())
+    body = get_entry(rando_page)
     return render(request, 'encyclopedia/entry.html', {
-        "my_title": random_item,
+        "my_title2": rando_page,
         'body': body
     })
+
+
+def edit(request, titl):
+    form = EditForm(request.POST)
+    if request.method == 'GET':
+        body = get_entry(titl)
+        return render(request, 'encyclopedia/edit.html', {
+           'formy': EditForm(initial={"body": body, 'title': titl})
+        })
+    elif request.method == "POST" and form.is_valid():
+        n_title = form.cleaned_data['title']
+        titl = n_title
+        n_body = form.cleaned_data['body']
+        save_entry(n_title, n_body)
+        body = get_entry(titl)
+        return render(request, 'encyclopedia/entry.html', {
+            "my_title2": titl,
+            'body': body
+        })

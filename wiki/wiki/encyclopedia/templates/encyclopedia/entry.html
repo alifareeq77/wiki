@@ -1,7 +1,10 @@
 {% extends 'encyclopedia/layout.html' %}
 {% block title %}
-{{ my_title }}
+{{ my_title2 }}
 {% endblock %}
 {% block body %}
     {{ body }}
+    <div style="margin-top: 20px">
+       <a href="{% url 'edit' my_title2 %}"> <button type="submit">edit</button></a>
+</div>
 {% endblock body %}
