@@ -8,6 +8,24 @@ from .util import get_entry, save_entry
 
 
 def index(request):
+    if request.method == 'POST':
+        q = request.POST.get('q')
+        for i in util.list_entries():
+            if q.casefold() == i.casefold():
+                body = get_entry(title=q)
+                return render(request, 'encyclopedia/entry.html', {
+                    "my_title2": q,
+                    'body': body
+                })
+        else:
+            lists = []
+            for j in util.list_entries():
+                if q.casefold() in j.casefold():
+                    lists.append(j)
+        return render(request, "encyclopedia/index.html", {
+            "entries": lists
+        })
+
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
@@ -56,7 +74,7 @@ def edit(request, titl):
     if request.method == 'GET':
         body = get_entry(titl)
         return render(request, 'encyclopedia/edit.html', {
-           'formy': EditForm(initial={"body": body, 'title': titl})
+            'formy': EditForm(initial={"body": body, 'title': titl})
         })
     elif request.method == "POST" and form.is_valid():
         n_title = form.cleaned_data['title']

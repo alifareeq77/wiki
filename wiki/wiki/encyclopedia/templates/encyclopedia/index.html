@@ -7,10 +7,12 @@
 {% block body %}
     <h1>All Pages</h1>
 
-    <ul>
+    <ul>{% if entries %}
         {% for entry in entries %}
             <li><a href="{% url  'title' entry  %}">{{ entry }}</a></li>
         {% endfor %}
-    </ul>
-
+        </ul>
+        {% else %}
+        <h2>nothing found</h2>
+        {% endif %}
 {% endblock %}
