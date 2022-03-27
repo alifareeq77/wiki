@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import render, redirect
 
 from . import util
@@ -12,11 +14,14 @@ def index(request):
 
 
 def title(request, titles):
-    body = get_entry(titles)
-    return render(request, 'encyclopedia/entry.html', {
-        "Ttitle": titles,
-        'body': body
-    })
+    if titles in util.list_entries():
+        body = get_entry(titles)
+        return render(request, 'encyclopedia/entry.html', {
+            "my_title": titles,
+            'body': body
+        })
+    elif titles not in util.list_entries():
+        return render(request, 'encyclopedia/error.html')
 
 
 def create_new_page(request):
@@ -32,5 +37,12 @@ def create_new_page(request):
         'my_form': CreatePageForm()
 
     })
+
+
 def random_page(request):
-    
+    random_item = random.choice(util.list_entries())
+    body = get_entry(random_item)
+    return render(request, 'encyclopedia/entry.html', {
+        "my_title": random_item,
+        'body': body
+    })
